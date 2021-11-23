@@ -21,8 +21,21 @@ class Parameters():
         self.max_t = 5000  # max simulation time (sec)
         self.u_max = 1.  # max control input (N)
         self.nu0 = 0.2  # maximum allowable docking velocity (m/s)
-        self.nu1 = 4*self.n  # distance dependent speed limit slope (m/s)
+        self.nu1 = 2.15*self.n  # distance dependent speed limit slope (m/s)
         self.max_vel = 10  # maximum allowable velocity (m/s)
+        self.Rmax = 10000  # Maximum distance (m)
+
+        # Verify Proofs:
+        # Theorem III.2:
+        if self.max_vel*(self.nu1*3**0.5+3*self.n**2*3**0.5/self.nu1+2*self.n)-3*self.n**2*self.nu0/self.nu1 > self.u_max/self.m:
+            print('Theorem III.2 not valid')
+        # Theorem III.3:
+        if (3*self.n**2*self.Rmax+2*self.n*self.max_vel)**2 > (self.u_max/self.m)**2:
+            print('Theorem III.3 not valid')
+        if (-2*self.n*self.max_vel)**2 > (self.u_max/self.m)**2:
+            print('Theorem III.3 not valid')
+        if (-self.n**2*self.Rmax)**2 > (self.u_max/self.m)**2:
+            print('Theorem III.3 not valid')
 
         # A matrix: x = [x, y, z, xdot, ydot, zdot]^T
         self.A = np.array([[0, 0, 0, 1, 0, 0],
@@ -178,11 +191,11 @@ class RTA(Parameters):
         self.eps = 1.5  # acceptable error
         self.track = False  # tracks NMT if True
         self.used_ub = False  # Determines if the RTA recently used the backup controller
-        self.steps = 100  # Number of steps between updates to x_des
+        self.steps = 20  # Number of steps between updates to x_des
 
         # Find all NMTs that adhere to constraint
         problem = constraint.Problem()
-        self.points = 10
+        self.points = 20
         problem.addVariable('theta1', np.linspace(np.pi/10, np.pi/2-np.pi/10, self.points))
         problem.addVariable('theta2', np.linspace(0.001, np.pi, self.points))
         problem.addConstraint(self.safety_constraint, ['theta1', 'theta2'])
@@ -353,7 +366,7 @@ class Implicit_Switching(RTA):
     def get_u(self, x, u_des):
         self.steps += 1
         # Every 100 steps, update x_des (closest NMT)
-        if self.steps >= 100:
+        if self.steps >= 20:
             self.x_des = self.find_NMT(x)
             self.steps = -1
             self.track = False
@@ -417,7 +430,7 @@ class Implicit_Optimization(RTA):
     def get_u(self, x, u_des):
         self.steps += 1
         # Every 100 steps, update x_des (closest NMT)
-        if self.steps >= 100:
+        if self.steps >= 20:
             self.x_des = np.reshape(self.find_NMT(x), (6, 1))
             self.steps = -1
             self.track = False

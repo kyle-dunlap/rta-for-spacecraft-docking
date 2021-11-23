@@ -37,7 +37,7 @@ class DockingEnv(Parameters):
             self.x[2] = self.x[2]*5000
         # Standard initial conditions
         else:
-            self.x = np.array([[-5000], [6000], [6000], [0.5], [-0.5], [0.5]])
+            self.x = np.array([[-5800], [6690], [4700], [0], [0], [0]])
 
         return self.x, False
 
@@ -157,6 +157,7 @@ class DockingEnv(Parameters):
         plt.xlabel('Relative Position ($\Vert \pmb{r}_{\mathrm{H}} \Vert$) [km]')
         plt.ylabel('Relative Velocity ($\Vert \pmb{v}_{\mathrm{H}} \Vert$) [m/s]')
         plt.grid(True)
+        plt.title('Distance Dependent Speed Limit')
 
         plt.figure(2)
         plt.fill_between([0, 10000], [self.max_vel, self.max_vel], [100, 100], color=(255/255, 239/255, 239/255))
@@ -169,6 +170,7 @@ class DockingEnv(Parameters):
         plt.xlabel('Time [s]')
         plt.ylabel('Velocity [m/s]')
         plt.grid(True)
+        plt.title('Maximum $\dot{x}$ Limit')
 
         plt.figure(3)
         plt.fill_between([0, 10000], [self.max_vel, self.max_vel], [100, 100], color=(255/255, 239/255, 239/255))
@@ -181,6 +183,7 @@ class DockingEnv(Parameters):
         plt.xlabel('Time [s]')
         plt.ylabel('Velocity [m/s]')
         plt.grid(True)
+        plt.title('Maximum $\dot{y}$ Limit')
 
         plt.figure(4)
         plt.fill_between([0, 10000], [self.max_vel, self.max_vel], [100, 100], color=(255/255, 239/255, 239/255))
@@ -194,6 +197,7 @@ class DockingEnv(Parameters):
         plt.ylabel('Velocity [m/s]')
         plt.grid(True)
         plt.legend(facecolor='white', framealpha=1)
+        plt.title('Maximum $\dot{z}$ Limit')
 
         plt.show()
 
